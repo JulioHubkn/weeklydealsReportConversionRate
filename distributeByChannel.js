@@ -1,5 +1,6 @@
-import { fstat } from "fs";
+import fs from "fs";
 import moment from "moment";
+import stageObjects from "./pipeline.js";
 
 const distributeByMonth = async (allItems) => {
   let allDeals = allItems;
@@ -21,29 +22,85 @@ const distributeByMonth = async (allItems) => {
         let channel = "";
         let owners = [];
         if (item.hs_all_owner_ids) {
-          item.hs_all_owner_ids.value.split(";");
+          owners = item.hs_all_owner_ids.value.split(";");
         }
         //Criar hierarquia de pipeline
         //Percorrer todas as opções de canal de aquisição e checar todas que já estiveram presentes no período
         //adicionar ao array com o canal de aquisição
         if (item.canal_de_aquisicao) {
           for (let chan of item.canal_de_aquisicao.versions) {
-            if (
-              +chan.timestamp <= monthEndTimestamp &&
-              +chan.timestamp >= firstDayOfTheYear
-            ) {
-              let dealChannelObj = {
-                channel: chan.value,
-                stages: item.dealstage.versions.filter((ds) => {
+            let lastChannelTimestamp = 99999999999999999999999999;
+            let nextChannel = item.canal_de_aquisicao.versions.find((ca) => {
+              return ca.timestamp > chan.timestamp;
+            });
+
+            if (nextChannel) {
+              lastChannelTimestamp = nextChannel.timestamp;
+            }
+            let lostStageTimestamp = 0;
+            let afterLostStage = true;
+            do {
+              if (
+                +chan.timestamp <= monthEndTimestamp &&
+                +chan.timestamp >= firstDayOfTheYear
+              ) {
+                let stages = item.dealstage.versions.filter((ds) => {
                   return (
                     ds.timestamp <= monthEndTimestamp &&
-                    ds.timestamp >= firstDayOfTheYear
+                    ds.timestamp >= firstDayOfTheYear &&
+                    ds.timestamp >= chan.timestamp &&
+                    ds.timestamp < lastChannelTimestamp &&
+                    ds.timestamp > lostStageTimestamp
                   );
-                }),
-                owners: owners,
-              };
-              deals.push(dealChannelObj);
-            }
+                });
+
+                // let stagesOrders = [];
+                let maxStage = {
+                  index: -1,
+                  name: ``,
+                };
+
+                let lost = false;
+                let lostTimestamp = 0;
+                for (let s of stages) {
+                  let stageOrder = stageObjects(+s.value);
+                  if (stageOrder.index < 0) {
+                    lost = true;
+                    lostTimestamp = s.timestamp;
+                  } else {
+                    maxStage.index < +stageOrder.index
+                      ? (maxStage = stageOrder)
+                      : null;
+                  }
+                }
+
+                let existsAfterLostStage = false;
+                if (lostTimestamp > 0) {
+                  for (let s of stages) {
+                    if (+s.timestamp > +lostTimestamp) {
+                      existsAfterLostStage = true;
+                      lostStageTimestamp = +lostTimestamp;
+                    }
+                  }
+                }
+
+                afterLostStage = existsAfterLostStage;
+
+                if (maxStage.index === -1) {
+                  maxStage = {};
+                }
+
+                let dealChannelObj = {
+                  channel: chan.value,
+                  stage: maxStage,
+                  owners: owners,
+                  lost: lost,
+                };
+                deals.push(dealChannelObj);
+              } else {
+                afterLostStage = false;
+              }
+            } while (afterLostStage);
           }
         }
       });
@@ -57,13 +114,29 @@ const distributeByMonth = async (allItems) => {
       monthNumber: i,
       deals: deals,
     };
-    console.log(JSON.stringify(object));
+
+    // console.log(JSON.stringify(object));
     monthsObjects.push(object);
   }
+  return monthsObjects;
 };
 
 const distributeByChannel = async (everyDealJson) => {
   let allDealsByMonth = await distributeByMonth(everyDealJson);
+  for (let i of allDealsByMonth) {
+    let inbound = i.deals.filter((item) => {
+      return item.channel === "Inbound";
+    });
+
+    let outbound = i.deals.filter((item) => {
+      return item.channel === "Outbound";
+    });
+    console.log(`Inbound deals > ${inbound.length}`);
+    console.log(`Outbound deals > ${outbound.length}`);
+    console.log(
+      `-----------------------------------------------------------------------`
+    );
+  }
 };
 
 export default distributeByChannel;
