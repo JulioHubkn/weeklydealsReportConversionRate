@@ -123,20 +123,38 @@ const distributeByMonth = async (allItems) => {
 
 const distributeByChannel = async (everyDealJson) => {
   let allDealsByMonth = await distributeByMonth(everyDealJson);
+  let inbound = [];
+  let outbound = [];
   for (let i of allDealsByMonth) {
-    let inbound = i.deals.filter((item) => {
+    let inboundFilter = i.deals.filter((item) => {
       return item.channel === "Inbound";
     });
 
-    let outbound = i.deals.filter((item) => {
+    let outboundFilter = i.deals.filter((item) => {
       return item.channel === "Outbound";
     });
-    console.log(`Inbound deals > ${inbound.length}`);
-    console.log(`Outbound deals > ${outbound.length}`);
-    console.log(
-      `-----------------------------------------------------------------------`
-    );
+
+    inbound.push({
+      deals: inboundFilter,
+      month: i.monthNumber,
+    });
+
+    outbound.push({
+      deals: outboundFilter,
+      month: i.monthNumber,
+    });
+
+    // console.log(`Inbound deals > ${inboundFilter.length}`);
+    // console.log(`Outbound deals > ${outboundFilter.length}`);
+    // console.log(
+    //   `-----------------------------------------------------------------------`
+    // );
   }
+
+  return {
+    inboundDeals: inbound,
+    outboundDeals: outbound,
+  };
 };
 
 export default distributeByChannel;
