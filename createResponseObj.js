@@ -26,10 +26,22 @@ const stageNames = [
 ];
 
 const createResponseObj = (conversionRates) => {
+  //------------------------------------- INBOUND ----------------------------------------
   let inboundConversionRates = conversionRates.inboundConversionRate;
-  let outboundConversionRates = conversionRates.outboundConversionRate;
   let accInboundConversionRates = conversionRates.accInboundConversionRate;
+  let accQualiDemoInboundConversionRates =
+    conversionRates.qualiDemoInboundConversion;
+  let accDemoGanhoInboundConversionRates =
+    conversionRates.demoGanhoInboundConversion;
+
+  //------------------------------------- OUTBOUND ----------------------------------------
+  let outboundConversionRates = conversionRates.outboundConversionRate;
   let accOutboundConversionRates = conversionRates.accOutboundConversionRate;
+  let accQualiDemoOutboundConversionRates =
+    conversionRates.qualiDemoOutboundConversion;
+  let accDemoGanhoOutboundConversionRates =
+    conversionRates.demoGanhoOutboundConversion;
+
   let months = [];
 
   for (let i = 0; i <= moment().get("month"); i++) {
@@ -37,15 +49,14 @@ const createResponseObj = (conversionRates) => {
   }
   months.push("Acumulado");
   let responseObj = {
-    inbound: { general: [] },
-    outbound: { general: [] },
+    inbound: { general: { stages: [], qualiDemo: [], demoGanho: [] } },
+    outbound: { general: { stages: [], qualiDemo: [], demoGanho: [] } },
     months: months,
   };
   for (let stageConversion = 0; stageConversion < 7; stageConversion++) {
     let inboundConversionNumbers = {
       rates: [],
       stageName: stageNames[stageConversion],
-      acc: inboundConversionRates[moment().get("month")][stageConversion],
     };
     let outboundConversionNumbers = {
       rates: [],
@@ -55,6 +66,7 @@ const createResponseObj = (conversionRates) => {
       inboundConversionNumbers.rates.push({
         cv: inboundConversionRates[i][stageConversion],
       });
+
       outboundConversionNumbers.rates.push({
         cv: outboundConversionRates[i][stageConversion],
       });
@@ -67,8 +79,14 @@ const createResponseObj = (conversionRates) => {
       cv: accOutboundConversionRates[stageConversion],
     });
 
-    responseObj.inbound.general.push(inboundConversionNumbers);
-    responseObj.outbound.general.push(outboundConversionNumbers);
+    responseObj.inbound.general.stages.push(inboundConversionNumbers);
+    responseObj.inbound.general.qualiDemo = accQualiDemoInboundConversionRates;
+    responseObj.inbound.general.demoGanho = accDemoGanhoInboundConversionRates;
+    responseObj.outbound.general.stages.push(outboundConversionNumbers);
+    responseObj.outbound.general.qualiDemo =
+      accQualiDemoOutboundConversionRates;
+    responseObj.outbound.general.demoGanho =
+      accDemoGanhoOutboundConversionRates;
   }
 
   return responseObj;

@@ -38,6 +38,8 @@ const checkConversionRateByChannel = async (volumes) => {
 
 const checkAccConversionRateByChannel = async (volumes) => {
   let accConversion = [];
+  let qualificacaoDemonstracao = [];
+  let demoGanho = [];
   let volumesLastIndex = volumes.length - 1;
   let arraySize = volumes[volumesLastIndex].length - 1;
   for (let i = 0; i < arraySize; i++) {
@@ -46,34 +48,65 @@ const checkAccConversionRateByChannel = async (volumes) => {
     accConversion[i] = conversionRate.toFixed(2);
   }
 
+  for (let i = 0; i <= +moment().get("month"); i++) {
+    let conversionRate = (100 * volumes[i][3]) / volumes[i][1];
+    qualificacaoDemonstracao[i] = conversionRate.toFixed(2);
+  }
+
+  for (let i = 0; i <= +moment().get("month"); i++) {
+    let conversionRate = (100 * volumes[i][7]) / volumes[i][3];
+    demoGanho[i] = conversionRate.toFixed(2);
+  }
+
   console.log(accConversion);
 
-  return accConversion;
+  return {
+    accConversion: accConversion,
+    qualificacaoDemonstracao: qualificacaoDemonstracao,
+    demoGanho: demoGanho,
+  };
 };
 
 const checkConversionRate = async (inboundDeals, outboundDeals) => {
   let inboundDealsVolume = checkStageVolumeByChannel(inboundDeals);
   let outboundDealsVolume = checkStageVolumeByChannel(outboundDeals);
 
+  //-------------------------------- INBOUND -------------------------------------
+
   let inboundConversionRate = await checkConversionRateByChannel(
     inboundDealsVolume
   );
+  let accInboundConversions = await checkAccConversionRateByChannel(
+    inboundDealsVolume
+  );
+
+  let accInboundConversionRate = accInboundConversions.accConversion;
+  let qualiDemoInboundConversionRate =
+    accInboundConversions.qualificacaoDemonstracao;
+  let demoGanhoInboundConversionRate = accInboundConversions.demoGanho;
+
+  //--------------------------------- OUTBOUND ----------------------------------
   let outboundConversionRate = await checkConversionRateByChannel(
     outboundDealsVolume
   );
-
-  let accInboundConversionRate = await checkAccConversionRateByChannel(
-    inboundDealsVolume
-  );
-  let accOutboundConversionRate = await checkAccConversionRateByChannel(
+  let accOutboundConversions = await checkAccConversionRateByChannel(
     outboundDealsVolume
   );
+
+  let accOutboundConversionRate = accOutboundConversions.accConversion;
+  let qualiDemoOutboundConversionRate =
+    accOutboundConversions.qualificacaoDemonstracao;
+  let demoGanhoOutboundConversionRate = accOutboundConversions.demoGanho;
 
   let obj = {
     inboundConversionRate: inboundConversionRate,
     accInboundConversionRate: accInboundConversionRate,
+    qualiDemoInboundConversion: qualiDemoInboundConversionRate,
+    demoGanhoInboundConversion: demoGanhoInboundConversionRate,
     outboundConversionRate: outboundConversionRate,
     accOutboundConversionRate: accOutboundConversionRate,
+    qualiDemoOutboundConversion: qualiDemoOutboundConversionRate,
+    demoGanhoOutboundConversion: demoGanhoOutboundConversionRate,
   };
 
   return obj;
