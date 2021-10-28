@@ -1,22 +1,36 @@
-import distributeByChannel from "./distributeByChannel.js";
+// import distributeByChannel from "./distributeByChannel.js";
 import fetchDeals from "./fetchDeals.js";
-import checkConversionRate from "./checkConversionRate.js";
+// import checkConversionRate from "./checkConversionRate.js";
+// import createResponseObj from "./createResponseObj.js";
+// import generateCharts from "./generateCharts.js";
 import readJson from "./readDealsJson.js";
-import createResponseObj from "./createResponseObj.js";
+import filterDeals from "./filterDeals.js";
+import newProspects from "./prospects.js";
+import lostAndWon from "./lostAndWon.js";
+import checkStages from "./checkStages.js";
 
 const apiKey = `fc7f5f74-80db-4e99-b3ce-5a4444851478`;
 
 const main = async () => {
-  //   await fetchDeals(apiKey);
+  // await fetchDeals(apiKey);
+  const responseObj = {
+    prospectsCount: {},
+    lostCount: 0,
+    wonCount: 0,
+  };
+
+  //---------------- Triagem de dados -------------------------------------
   const everyDealJson = await readJson();
-  const dealsByMonthAndChannel = await distributeByChannel(everyDealJson);
-  const checkConversionRateByMonthAndChannel = await checkConversionRate(
-    dealsByMonthAndChannel.inboundDeals,
-    dealsByMonthAndChannel.outboundDeals
-  );
-  console.log(checkConversionRateByMonthAndChannel);
-  const responseObj = createResponseObj(checkConversionRateByMonthAndChannel);
-  console.log(JSON.stringify(responseObj));
+  const filteredDeals = await filterDeals(everyDealJson);
+
+  //----------------- Analisando Dados ------------------------------------
+  const countProspects = await newProspects(filteredDeals.changed);
+  const countLostAndWon = await lostAndWon(filteredDeals.changed);
+  const checkStagePerformance = await checkStages(filteredDeals);
+
+  //----------------- Setando variável resposta ---------------------------
+  responseObj.lostCount = countLostAndWon.lost;
+  responseObj.wonCount = countLostAndWon.won;
 };
 
 main();
