@@ -38,7 +38,7 @@ const newProspects = async (deals) => {
     obj.Search.prospectCount +
     obj.Tracking.prospectCount +
     obj.BigData.prospectCount;
-  console.log("Entraram no funil > " + JSON.stringify(obj));
+  return obj;
 };
 
 export default newProspects;

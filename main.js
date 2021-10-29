@@ -1,8 +1,4 @@
-// import distributeByChannel from "./distributeByChannel.js";
 import fetchDeals from "./fetchDeals.js";
-// import checkConversionRate from "./checkConversionRate.js";
-// import createResponseObj from "./createResponseObj.js";
-// import generateCharts from "./generateCharts.js";
 import readJson from "./readDealsJson.js";
 import filterDeals from "./filterDeals.js";
 import newProspects from "./prospects.js";
@@ -17,6 +13,7 @@ const main = async () => {
     prospectsCount: {},
     lostCount: 0,
     wonCount: 0,
+    stagePerformances: [],
   };
 
   //---------------- Triagem de dados -------------------------------------
@@ -31,6 +28,9 @@ const main = async () => {
   //----------------- Setando variável resposta ---------------------------
   responseObj.lostCount = countLostAndWon.lost;
   responseObj.wonCount = countLostAndWon.won;
+  responseObj.prospectsCount = countProspects;
+  responseObj.stagePerformances = checkStagePerformance;
+  console.log(responseObj);
 };
 
 main();

@@ -85,15 +85,8 @@ const checkStages = async (allDeals) => {
           checkedChanges.push(stage);
           changedStagesPerformance[stage - 1].changedStage++;
         } else {
-          if (item.indexes.includes(stage + 2)) {
-            checkedChanges.push(stage);
-            changedStagesPerformance[stage - 1].changedStage++;
-            checkedChanges.push(stage + 1);
-            changedStagesPerformance[stage].changedStage++;
-          } else {
-            if (lastIndex === -8) {
-              changedStagesPerformance[stage - 1].lost++;
-            }
+          if (lastIndex === -8) {
+            changedStagesPerformance[stage - 1].lost++;
           }
         }
         if (lastIndex !== stage && !checkedStages.includes(stage)) {
@@ -102,9 +95,6 @@ const checkStages = async (allDeals) => {
         }
       }
     });
-    // if (initialStage !== 1) {
-    //   changedStagesPerformance[stageIndex - 1]++;
-    // }
   });
 
   let index = 0;
@@ -119,7 +109,8 @@ const checkStages = async (allDeals) => {
     index++;
   });
 
-  console.log(changedStagesPerformance);
+  // console.log(changedStagesPerformance);
+  return changedStagesPerformance;
 };
 
 export default checkStages;
