@@ -20,4 +20,4 @@ const lostAndWon = async (deals) => {
   return obj;
 };
 
-export default lostAndWon;
+module.exports = { lostAndWon };

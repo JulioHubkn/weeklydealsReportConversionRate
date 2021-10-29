@@ -113,4 +113,4 @@ const checkStages = async (allDeals) => {
   return changedStagesPerformance;
 };
 
-export default checkStages;
+module.exports = { checkStages };

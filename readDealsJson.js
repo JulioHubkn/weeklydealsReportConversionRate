@@ -1,4 +1,4 @@
-import fs from "fs";
+const fs = require("fs");
 
 const readJson = async () => {
   let allDeals = await fs.readFileSync("./allDeals2021.json");
@@ -7,4 +7,4 @@ const readJson = async () => {
   return allDeals;
 };
 
-export default readJson;
+module.exports = { readJson };

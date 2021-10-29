@@ -1,5 +1,5 @@
-import moment from "moment";
-import pipeline from "./pipeline.js";
+const moment = require("moment");
+const { pipeline } = require("./pipeline");
 const filterDeals = async (deals) => {
   const weekStart = moment().subtract(1, "week").startOf("week").valueOf();
   console.log(`Antes > ${deals.length}`);
@@ -123,4 +123,4 @@ const filterDeals = async (deals) => {
   };
 };
 
-export default filterDeals;
+module.exports = { filterDeals };

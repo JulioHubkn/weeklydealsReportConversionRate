@@ -1,9 +1,9 @@
-import fetchDeals from "./fetchDeals.js";
-import readJson from "./readDealsJson.js";
-import filterDeals from "./filterDeals.js";
-import newProspects from "./prospects.js";
-import lostAndWon from "./lostAndWon.js";
-import checkStages from "./checkStages.js";
+// const { fetchDeals } = require("./fetchDeals.js");
+const { readJson } = require("./readDealsJson.js");
+const { filterDeals } = require("./filterDeals.js");
+const { newProspects } = require("./prospects.js");
+const { lostAndWon } = require("./lostAndWon.js");
+const { checkStages } = require("./checkStages.js");
 
 const apiKey = `fc7f5f74-80db-4e99-b3ce-5a4444851478`;
 
@@ -17,7 +17,9 @@ const main = async () => {
   };
 
   //---------------- Triagem de dados -------------------------------------
+  // const everyDealJson = await fetchDeals(apiKey);
   const everyDealJson = await readJson();
+
   const filteredDeals = await filterDeals(everyDealJson);
 
   //----------------- Analisando Dados ------------------------------------
@@ -31,6 +33,7 @@ const main = async () => {
   responseObj.prospectsCount = countProspects;
   responseObj.stagePerformances = checkStagePerformance;
   console.log(responseObj);
+  return responseObj;
 };
 
 main();

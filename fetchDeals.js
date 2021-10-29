@@ -1,6 +1,5 @@
-import fetch from "node-fetch";
+const fetch = require("node-fetch");
 // const moment = require("moment");
-import { writeFileSync } from "fs";
 
 const fetchDeals = async (apiKey) => {
   let offset = "";
@@ -25,7 +24,8 @@ const fetchDeals = async (apiKey) => {
     }
     // break;
   } while (results.hasMore);
-  writeFileSync("./allDeals2021.json", JSON.stringify(dealsArray));
+  // writeFileSync("./allDeals2021.json", JSON.stringify(dealsArray));
+  return dealsArray;
 };
 
-export default fetchDeals;
+module.exports = { fetchDeals };

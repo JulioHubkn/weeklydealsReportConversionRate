@@ -46,7 +46,7 @@ const stagesObject = [
   },
 ];
 
-const stageObjects = (stage) => {
+const pipeline = (stage) => {
   let selectedStage = stagesObject.find((item) => {
     return item.codes.includes(+stage);
   });
@@ -63,4 +63,4 @@ const stageObjects = (stage) => {
   }
 };
 
-export default stageObjects;
+module.exports = { pipeline };

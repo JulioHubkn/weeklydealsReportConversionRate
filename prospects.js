@@ -41,4 +41,4 @@ const newProspects = async (deals) => {
   return obj;
 };
 
-export default newProspects;
+module.exports = { newProspects };
